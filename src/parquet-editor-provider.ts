@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { readParquetFile } from './parquetReader';
 /**
  * Define the document (the data model) used for parquet files.
  */
@@ -13,21 +14,23 @@ class ParquetDocument implements vscode.CustomDocument {
 		return new ParquetDocument(uri, fileData);
 	}
 
-	private static async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-		if (uri.scheme === 'untitled') {
-			return new Uint8Array();
-		}
-        // TODO: use parquet reader
-		return new Uint8Array(await vscode.workspace.fs.readFile(uri));
+	private static async readFile(uri: vscode.Uri): Promise<any[]> {
+        const res = await readParquetFile(uri.path);
+        return res;
+		// if (uri.scheme === 'untitled') {
+		// 	return new Uint8Array();
+		// }
+        // // TODO: use parquet reader
+		// return new Uint8Array(await vscode.workspace.fs.readFile(uri));
 	}
 
 	private readonly _uri: vscode.Uri;
 
-	private _documentData: Uint8Array;
+	private _documentData: any[];
 
 	private constructor(
 		uri: vscode.Uri,
-		initialContent: Uint8Array,
+		initialContent: any[],
 	) {
 		this._uri = uri;
 		this._documentData = initialContent;
@@ -35,7 +38,7 @@ class ParquetDocument implements vscode.CustomDocument {
 
 	public get uri() { return this._uri; }
 
-	public get documentData(): Uint8Array { return this._documentData; }
+	public get documentData(): any[] { return this._documentData; }
 
     dispose(): void {}
 
@@ -95,7 +98,6 @@ export class ParquetEditorProvider implements vscode.CustomEditorProvider<Parque
 	 * Get the static HTML used for in our editor's webviews.
 	 */
 	private getHtmlForWebview(document: ParquetDocument, webview: vscode.Webview): string {
-
 		return /* html */`
 			<!DOCTYPE html>
 			<html lang="en">
@@ -111,6 +113,9 @@ export class ParquetEditorProvider implements vscode.CustomEditorProvider<Parque
 			</head>
 			<body>
 				<h1>Hello world!</h1>
+                <div>
+                ${document.documentData?.map(row => `<div>${JSON.stringify(row)}</div>`)}
+                </div>
 			</body>
 			</html>`;
 	}
