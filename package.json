@@ -10,16 +10,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:helloworld.helloWorld"
-  ],
+		"onCustomEditor:parquetViewer.view"
+	],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "helloworld.helloWorld",
-        "title": "Parquet"
-      }
-    ]
+    "customEditors": [
+			{
+				"viewType": "parquetViewer.view",
+				"displayName": "Parquet File",
+				"selector": [
+					{
+						"filenamePattern": "*.parquet"
+					}
+				]
+			}
+		]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
