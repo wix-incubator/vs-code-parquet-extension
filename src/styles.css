@@ -1,0 +1,28 @@
+table, th, td {
+    /* border: 1px solid gray; */
+    border: 1px solid var(--vscode-checkbox-background);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: scroll;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background: var(--vscode-button-background);
+}
+
+tr:hover {
+    background-color: var(--vscode-editor-lineHighlightBackground);
+}
+
+.dimmed {
+    color: var(--vscode-disabledForeground);
+}
+
+.data-type {
+    font-weight: 400;
+}

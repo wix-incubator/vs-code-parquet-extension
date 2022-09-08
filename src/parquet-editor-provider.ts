@@ -102,9 +102,15 @@ export class ParquetEditorProvider
    * Get the static HTML used for in our editor's webviews.
    */
   private getHtmlForWebview(
-    document: ParquetDocument,
+    doc: ParquetDocument,
     webview: vscode.Webview
   ): string {
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._context.extensionUri, 'src', 'sort.js')
+    );
+    const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._context.extensionUri, 'src', 'styles.css'));
+    const nonce = this.getNonce();
     return /* html */ `
 			<!DOCTYPE html>
 			<html lang="en">
@@ -114,32 +120,48 @@ export class ParquetEditorProvider
 				Use a content security policy to only allow loading images from https or from our extension directory,
 				and only allow scripts that have a specific nonce.
 				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
-          webview.cspSource
-        } blob:; style-src ${webview.cspSource};">
+				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="${styleMainUri}" rel="stylesheet" />
 				<title>Parquet Viewer</title>
 			</head>
 			<body>
-                <table class="sortable">
+                <table id="parquetDataTable">
                     <thead>
                         <tr>
-                            ${document.documentData?.columnNames?.map(
-                            (cn) => `<th>${cn}</th>`
-                            ).join('')}
+                            <th></th>
+                            ${doc.documentData?.columnNames
+                              ?.map(
+                                (cn, idx) =>
+                                  `<th id="th-${idx}">${cn.name} <span class="data-type">(${cn.type})</span></th>`
+                              )
+                              .join('')}
                         </tr>
                     </thead>
                     <tbody>
-                        ${document.documentData?.rows.map(
-                        (row) =>
-                            `<tr>${document.documentData.columnNames.map(
-                            (cn) => `<td>${row[cn]}</td>`
-                            ).join('')}</tr>`
-                        ).join('')}
+                        ${doc.documentData?.rows
+                          .map(
+                            (row, idx) =>
+                              `<tr><td class="dimmed">${idx}</td>${doc.documentData.columnNames
+                                .map((cn) => `<td class="${row[cn.name] === undefined ? "dimmed" : ""}">${row[cn.name]}</td>`)
+                                .join('')}</tr>`
+                          )
+                          .join('')}
                     </tbody>
                 </table>
+                <script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
+  }
+
+  private getNonce() {
+    let text = '';
+    const possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
   }
 
   /* #region Unused, maybe will be needed in the future */
