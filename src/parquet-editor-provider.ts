@@ -106,10 +106,10 @@ export class ParquetEditorProvider
     webview: vscode.Webview
   ): string {
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._context.extensionUri, 'src', 'sort.js')
+      vscode.Uri.joinPath(this._context.extensionUri, 'media', 'sort.js')
     );
     const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._context.extensionUri, 'src', 'styles.css'));
+        this._context.extensionUri, 'media', 'styles.css'));
     const nonce = this.getNonce();
     return /* html */ `
 			<!DOCTYPE html>
