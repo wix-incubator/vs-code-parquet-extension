@@ -1,7 +1,7 @@
 {
-  "name": "parquet",
-  "displayName": "ParquetFileViewer",
-  "description": "",
+  "name": "vscode-parquet-viewer",
+  "displayName": "Parquet File Viewer",
+  "description": "VS Code extension to view .parquet files",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.71.0"
@@ -48,7 +48,6 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "parquetjs": "^0.11.2",
     "parquetjs-lite": "^0.8.7"
   }
 }
